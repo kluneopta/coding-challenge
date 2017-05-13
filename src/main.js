@@ -9,4 +9,38 @@
     preferCanvas : true
   }).fitBounds(kenyaBounds)
 
+  $.getJSON('data/projects.geojson')
+    .done(function(data) {
+      L.geoJson(data, {
+        onEachFeature: eachProjectFeature
+      }).addTo(map)
+    })
+    .fail(function(error) {
+      console.error("Failed to load Kenya Projects GeoJson " + error)
+    })
+
+  function eachProjectFeature(feature, layer) {
+    layer.bindPopup(getPopupContent(feature))
+  }
+
+  var projectTemplate =
+    "<div class='project-info'> \
+      <h3 class='title'>{{project_title}}</h3> \
+      <p class='description'> \
+        <strong>Description</strong>: {{project_description}} \
+      </p> \
+      <p class='objectives'> \
+        <strong>Objectives</strong>: {{project_objectives}} \
+      </p> \
+    </div>"
+
+  function getPopupContent(feature) {
+    // We could compile this template with something like Handlebars
+    return L.mapbox.template(projectTemplate, {
+      project_title: (feature.properties.project_title || "No title"),
+      project_description: (feature.properties.project_description || "No description"),
+      project_objectives: (feature.properties.project_objectives || "No objectives")
+    })
+  }
+
 }())
