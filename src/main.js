@@ -9,11 +9,21 @@
     preferCanvas : true
   }).fitBounds(kenyaBounds)
 
+  var layerLabels = {
+    "projects" : "All Projects"
+  }
+
+  var layerControl = L.control.layers().addTo(map);
+
+  var projects
+
   $.getJSON('data/projects.geojson')
     .done(function(data) {
-      L.geoJson(data, {
+      projects = L.geoJson(data, {
         onEachFeature: eachProjectFeature
-      }).addTo(map)
+      })
+      projects.addTo(map)
+      layerControl.addBaseLayer(projects, layerLabels["projects"])
     })
     .fail(function(error) {
       console.error("Failed to load Kenya Projects GeoJson " + error)
