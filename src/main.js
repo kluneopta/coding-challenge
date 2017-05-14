@@ -11,13 +11,16 @@
 
   var layerLabels = {
     "projects" : "All Projects",
-    "clustered" : "Clustered Projects"
+    "clustered" : "Clustered Projects",
+    "counties" : "Projects by County"
   }
 
   var layerControl = L.control.layers().addTo(map);
 
+  // Map baselayers
   var projects;
   var clusterMarkers = L.markerClusterGroup();
+  var kenyaCounties
 
   $.getJSON('data/projects.geojson')
     .done(function(data) {
@@ -57,4 +60,79 @@
     });
   }
 
+  $.getJSON('data/counties_projects.geojson')
+    .done(function(data) {
+      kenyaCounties = L.geoJson(data, {
+        style: getCountyStyle,
+        onEachFeature: eachCountyFeature
+      })
+      layerControl.addBaseLayer(kenyaCounties, layerLabels["counties"])
+    })
+    .fail(function(error) {
+      console.error("Failed to load Kenya Counties GeoJSON " + error)
+    })
+
+  function eachCountyFeature(feature, layer) {
+    layer.on({
+      mousemove: hoverFeature,
+      mouseout: featureExit,
+    })
+  }
+
+  var popup = new L.Popup();
+  var closeTooltip;
+  var countyProjTemplate = "<div class='county-info'> \
+    <h3>{{county_name}}</h3><h4>{{project_count}} project(s)</h4></div>"
+
+  function hoverFeature(event) {
+    var layer = event.target
+    popup.setLatLng(event.latlng);
+    popup.setContent(L.mapbox.template(countyProjTemplate, {
+       "county_name" : layer.feature.properties.county_nam,
+       "project_count" : layer.feature.properties.proj_count
+    }));
+
+    if (!popup._map) {
+      popup.openOn(map);
+    }
+    window.clearInterval(closeTooltip);
+
+    layer.setStyle({
+      weight: 3,
+      opacity: 0.3,
+      fillOpacity: 1.0
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+      layer.bringToFront();
+    }
+  }
+
+  function featureExit(event) {
+    kenyaCounties.resetStyle(event.target)
+    closeTooltip = window.setInterval(function() {
+      map.closePopup();
+    }, 100);
+  }
+
+  function getCountyStyle(feature) {
+    return {
+      weight: 2,
+      opacity: 0.1,
+      color: 'black',
+      fillOpacity: 0.8,
+      fillColor: getCountyColor(feature.properties.proj_count)
+    };
+  }
+
+  // These could be generated mathmatically but I thought it lost too much
+  // detail on the bottom range because the max value is an outlier
+  function getCountyColor(projCount) {
+    return projCount >= 106 ? '#99000d' :
+           projCount >= 72  ? '#cb181d' :
+           projCount >= 50  ? '#ef3b2c' :
+           projCount >= 35  ? '#fb6a4a' :
+           projCount >= 27  ? '#fc9272' :
+           projCount >= 13  ? '#fcbba1' : '#fee5d9';
+  }
 }())
