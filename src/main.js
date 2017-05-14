@@ -1,5 +1,5 @@
 (function() {
-  'use strict'
+  'use strict';
 
   var kenyaBounds = new L.LatLngBounds(new L.LatLng(-4.801282, 33.910894),
     new L.LatLng(5.411669, 41.906744));
@@ -10,27 +10,31 @@
   }).fitBounds(kenyaBounds)
 
   var layerLabels = {
-    "projects" : "All Projects"
+    "projects" : "All Projects",
+    "clustered" : "Clustered Projects"
   }
 
   var layerControl = L.control.layers().addTo(map);
 
-  var projects
+  var projects;
+  var clusterMarkers = L.markerClusterGroup();
 
   $.getJSON('data/projects.geojson')
     .done(function(data) {
       projects = L.geoJson(data, {
         onEachFeature: eachProjectFeature
       })
-      projects.addTo(map)
-      layerControl.addBaseLayer(projects, layerLabels["projects"])
+      clusterMarkers.addTo(map)
+      layerControl.addBaseLayer(clusterMarkers, layerLabels["clustered"])
+      layerControl.addBaseLayer(projects, layerLabels["projects"]);
     })
     .fail(function(error) {
-      console.error("Failed to load Kenya Projects GeoJson " + error)
+      console.error("Failed to load Kenya Projects GeoJson " + error);
     })
 
   function eachProjectFeature(feature, layer) {
-    layer.bindPopup(getPopupContent(feature))
+    layer.bindPopup(getPopupContent(feature));
+    clusterMarkers.addLayer(layer);
   }
 
   var projectTemplate =
@@ -42,7 +46,7 @@
       <p class='objectives'> \
         <strong>Objectives</strong>: {{project_objectives}} \
       </p> \
-    </div>"
+    </div>";
 
   function getPopupContent(feature) {
     // We could compile this template with something like Handlebars
@@ -50,7 +54,7 @@
       project_title: (feature.properties.project_title || "No title"),
       project_description: (feature.properties.project_description || "No description"),
       project_objectives: (feature.properties.project_objectives || "No objectives")
-    })
+    });
   }
 
 }())
