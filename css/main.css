@@ -108,6 +108,53 @@ body {
   width: 100%;
 }
 
+#legend {
+  display: none;
+}
+
+.map-legend ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.legend-keys {
+  height: 16px;
+  width: 16px;
+  float: left;
+  margin-right: 8px;
+}
+
+#legend-1 {
+  background-color: #fee5d9
+}
+
+#legend-2 {
+  background-color: #fcbba1
+}
+
+#legend-3 {
+  background-color: #fc9272
+}
+
+#legend-4 {
+  background-color: #fb6a4a
+}
+
+#legend-5 {
+  background-color: #ef3b2c
+}
+
+#legend-5 {
+  background-color: #ef3b2c
+}
+
+#legend-6 {
+  background-color: #cb181d
+}
+
+#legend-7 {
+  background-color: #99000d
+}
 /* ==========================================================================
    Helper classes
    ========================================================================== */

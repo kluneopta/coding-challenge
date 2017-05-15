@@ -1,6 +1,7 @@
 (function() {
   'use strict';
 
+  // Calculated from county dataset bounds
   var kenyaBounds = new L.LatLngBounds(new L.LatLng(-4.801282, 33.910894),
     new L.LatLng(5.411669, 41.906744));
 
@@ -16,6 +17,26 @@
   }
 
   var layerControl = L.control.layers().addTo(map);
+  var legendCtl = L.mapbox.legendControl()
+  var legendDOM = document.querySelector("#legend").innerHTML
+  legendCtl.addLegend(legendDOM)
+
+  map.on('baselayerchange', function(event) {
+    if(event.name == layerLabels["counties"]) {
+      toggleLegend(true)
+    } else {
+      toggleLegend(false)
+      window.clearInterval(closeTooltip);
+    }
+  })
+
+  function toggleLegend(showLegend) {
+    if(showLegend) {
+      legendCtl.addTo(map)
+    } else {
+      legendCtl.remove()
+    }
+  }
 
   // Map baselayers
   var projects;
