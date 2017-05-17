@@ -16,6 +16,11 @@
     "counties" : "Projects by County"
   }
 
+  // Map baselayers
+  var projects;
+  var clusterMarkers = L.markerClusterGroup();
+  var kenyaCounties
+
   var layerControl = L.control.layers().addTo(map);
   var legendCtl = L.mapbox.legendControl()
   var legendDOM = document.querySelector("#legend").innerHTML
@@ -38,12 +43,7 @@
     }
   }
 
-  // Map baselayers
-  var projects;
-  var clusterMarkers = L.markerClusterGroup();
-  var kenyaCounties
-
-  $.getJSON('data/projects.geojson')
+  $.getJSON('data/projects.min.geojson')
     .done(function(data) {
       projects = L.geoJson(data, {
         onEachFeature: eachProjectFeature
@@ -74,10 +74,11 @@
 
   function getPopupContent(feature) {
     // We could compile this template with something like Handlebars
+    // The original properties mapping is at the end of the minified geojson file
     return L.mapbox.template(projectTemplate, {
-      project_title: (feature.properties.project_title || "No title"),
-      project_description: (feature.properties.project_description || "No description"),
-      project_objectives: (feature.properties.project_objectives || "No objectives")
+      project_title: (feature.properties.f || "No title"),
+      project_description: (feature.properties.e || "No description"),
+      project_objectives: (feature.properties.d || "No objectives")
     });
   }
 
@@ -102,8 +103,11 @@
 
   var popup = new L.Popup();
   var closeTooltip;
-  var countyProjTemplate = "<div class='county-info'> \
-    <h3>{{county_name}}</h3><h4>{{project_count}} project(s)</h4></div>"
+  var countyProjTemplate =
+    "<div class='county-info'> \
+      <h3>{{county_name}}</h3> \
+      <h4>{{project_count}} project(s)</h4> \
+    </div>"
 
   function hoverFeature(event) {
     var layer = event.target
