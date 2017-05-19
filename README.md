@@ -20,7 +20,7 @@
 * If I had more time I wouldn't bind the popup project info data until the user clicks on the marker to improve performance.
 * I've cleaned up the projects dataset that had spelling variations and capitalization issues.  I recategorized 5 projects, which listed Konoin instead of Bomet for the proper county.  There was another marker with coordinates inside of Nairobi county but a missing county value that I fixed.
 * There was a stray polygon in the counties dataset that should be part of the Kisumu county boundary.
-* I didn't assign projects without a latitude and longitude value to the centerpoint of its county but that would be another improvementt to make.
+* I didn't assign projects without a latitude and longitude value to the centerpoint of its county but that would be another improvement to make.
 * As part of the bonus I condensed the projects dataset somewhat by converting properties with 'Unspecified' to null.  I then minified the file, which removed whitespace and remapped the property keys.
 * On a real server the GeoJSON can be gzipped or we can use something like JSONP or another binary format that could stream the data.
 
